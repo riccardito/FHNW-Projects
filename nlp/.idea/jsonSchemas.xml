@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="JsonSchemaMappingsProjectConfiguration">
+    <state>
+      <map>
+        <entry key="HTTP Client Environment File">
+          <value>
+            <SchemaInfo>
+              <option name="name" value="HTTP Client Environment File" />
+              <option name="relativePathToSchema" value="jar://$APPLICATION_HOME_DIR$/plugins/restClient/lib/restClient.jar!/schemas/http-client.env-schema.json" />
+              <option name="applicationDefined" value="true" />
+              <option name="patterns">
+                <list>
+                  <Item>
+                    <option name="path" value="Notebooks/Minichallenge2/bot-Gian/actions/allpisten.json" />
+                  </Item>
+                </list>
+              </option>
+            </SchemaInfo>
+          </value>
+        </entry>
+        <entry key="JSConfig">
+          <value>
+            <SchemaInfo>
+              <option name="name" value="JSConfig" />
+              <option name="relativePathToSchema" value="http://json.schemastore.org/jsconfig" />
+              <option name="applicationDefined" value="true" />
+              <option name="patterns">
+                <list>
+                  <Item>
+                    <option name="path" value="Notebooks/Minichallenge2/bot-Nicka/domain.yml" />
+                  </Item>
+                </list>
+              </option>
+            </SchemaInfo>
+          </value>
+        </entry>
+      </map>
+    </state>
+  </component>
+</project>

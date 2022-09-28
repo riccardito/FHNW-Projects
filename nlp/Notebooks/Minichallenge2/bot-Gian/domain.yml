@@ -1,0 +1,132 @@
+version: "3.1"
+
+intents:
+  - greet
+  - goodbye
+  - affirm
+  - deny
+  - mood_great
+  - bot_challenge
+  - get_ticket_prices
+  - get_ticket_types
+  - get_information_on_ticket_type
+  - tell_ticket_place
+  - tell_ticket_type
+  - get_places_to_by_ticket
+  - weather_check
+  - pisten_check
+  - event_check
+  - get_mountain_railways
+  - thank_you
+  #- nlu_fallback
+  #- out_of_scope
+
+
+entities:
+  - place
+  - ticket_type_request
+  - ticket_type
+  - ticket_place
+  - day
+  - weekday
+  
+
+slots:
+  ticket_type_request:
+    type: text
+    influence_conversation: true
+    mappings:
+    - type: from_entity
+      entity: ticket_type_request
+
+  ticket_type:
+    type: text
+    influence_conversation: true
+    mappings:
+    - type: from_entity
+      entity: ticket_type
+
+  ticket_place:
+    type: text
+    influence_conversation: true
+    mappings:
+    - type: from_entity
+      entity: ticket_place
+  day:
+    type: text
+    influence_conversation: true
+    mappings:
+    - type: custom
+
+  weekday:
+    type: text
+    influence_conversation: true
+    mappings:
+    - type: custom
+
+forms:
+  specify_ticket_form:
+    required_slots:
+        - ticket_type
+        - ticket_place
+
+  specify_ticket_place:
+    required_slots:
+        - ticket_place
+
+  specify_ticket_type:
+    required_slots:
+        - ticket_place
+
+
+responses:
+  utter_greet:
+  - text: "Hallo, wie kann ich helfen?"
+  - text: "Guten Tag, wie kann ich behilflich sein?"
+
+  utter_did_that_help:
+  - text: "Did that help you?"
+
+  utter_happy:
+  - text: "Great, carry on!"
+
+  utter_goodbye:
+  - text: "Bye"
+
+  utter_iamabot:
+  - text: "I am a bot, powered by Rasa."
+
+  utter_ask_ticket_place:
+  - text: "Für welche Bergbahn?"
+
+  utter_ask_ticket_type:
+  - text: "Welche Art von Ticket?"
+
+  utter_tell_specified_ticket_form:
+  - text: "Ich soll die passenden Informationen für die Ticketart: {ticket_type} bei {ticket_place} suchen."
+
+  utter_get_places_to_by_ticket:
+  - text: "Tickets können direkt bei einem Skilift oder im Tourismuszentrum gekauft werden."
+
+  utter_get_mountain_railways:
+  - text: "Es gibt mit Rinerhorn, Jakobshorn & Parsenn, Pischa, Madrisa und Parsenn eine Vielzahl an Bergbahnen."
+
+  utter_thank_you:
+  - text: "Freut mich behilflich zu sein."
+  - text: "Gern geschehen."
+  - text: "Das freut mich zu hören."
+
+
+actions:
+- action_get_ticket_types
+- action_get_information_on_ticket_type
+- action_get_information_on_ticket_price
+- action_check_weather
+- action_check_pisten
+- action_check_events
+- action_default_fallback
+
+session_config:
+  session_expiration_time: 30
+  carry_over_slots_to_new_session: true
+  

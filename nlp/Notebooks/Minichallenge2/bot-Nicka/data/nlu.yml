@@ -1,0 +1,128 @@
+nlu:
+- regex: day
+  examples: |
+    - heute
+    - morgen
+
+- regex: weekday
+  examples: |
+    - Montag
+    - Dienstag
+    - Mittwoch
+    - Donnerstag
+    - Freitag
+    - Samstag
+    - Sonntag
+
+- intent: greet
+  examples: |
+    - hallo
+    - hi
+    - guten tag
+    - guten abend
+    - grüezi
+    - grüeziwohl
+    - ich grüsse sie
+    - seien sie gegrüsst
+
+- intent: goodbye
+  examples: |
+    - auf wiedersehen
+    - ade
+    - tschau
+    - gute nacht
+    - bye
+    - bye bye
+    - einen schönen tag noch 
+    - einen schönen tag
+    
+
+- intent: affirm
+  examples: |
+    - ja
+    - yes
+    - jap
+    - natürlich
+    - das hört sich gut an
+    - korrekt
+
+- intent: deny
+  examples: |
+    - no
+    - nein
+    - nie
+    - Ich denke nicht
+    - nicht wirklich
+
+- intent: mood_great
+  examples: |
+    - perfekt
+    - grossartig
+    - fühle mich wie ein König
+    - wundervoll
+    - Ich fühle mich gut
+    - Mir geht es grossartig
+    - Ich bin grossartig
+    - Ich werde die Welt retten
+    - super stoked
+    - extrem gut
+    - einigermassen
+    - den umständen entsprechend
+
+- intent: mood_unhappy
+  examples: |
+    - mein tag war furchtbar
+    - ich bin traurig
+    - ich fühle mich nicht gut
+    - ich bin enttäuscht
+    - super traurig
+    - Ich bin traurig
+    - traurig
+    - sehr traurig
+    - unglücklich
+    - nicht gut
+    - nicht wirklich gut
+    - extrem traurig
+
+- intent: bot_challenge
+  examples: |
+    - bist du ein bot?
+    - bist du ein mensch?
+    - rede ich mit einem bot?
+    - rede ich mit einem menschen?
+
+- intent: weather_check
+  examples: |
+    - wie ist das wetter [heute](day)?
+    - ist das wetter [heute](day) gut?
+    - wie ist das wetter [morgen](day)?
+    - ist das wetter [morgen](day) gut?
+    - wie ist das wetter [morgen](day) in der nähe?
+    - ist es [heute](day) schön ?
+    - wie ist das wetter von [heute](day) bis [Freitag](weekday)?
+    - ist das wetter von [heute](day) bis [Freitag](weekday) gut?
+    - wie ist das wetter von [morgen](day) bis [Freitag](weekday)?
+    - ist das wetter von [morgen](day) bis [Freitag](weekday) gut?
+    - wie ist das wetter von [morgen](day) bis [Freitag](weekday) in der nähe?
+    - ist es von [heute](day) bis [Freitag](weekday) schön ?
+    - wie ist das Wetter von [Mittwoch](weekday) bis [Freitag](weekday)?
+    - wie ist das Wetter von [Donnerstag](weekday) bis [Freitag](weekday)?
+    - wie ist das Wetter von [Montag](weekday) bis [Mittwoch](weekday)?
+    - wie ist das Wetter von [Freitag](weekday) bis [Montag](weekday)?
+    
+    
+- intent: pisten_check
+  examples: |
+    - sind die pisten [heute](day) offen?
+    - ist die Anlage [heute](day) offen?
+    - laufen die Lifte [heute](day) ?
+    - kann man [heute](day) skifahren?
+
+- intent: event_check
+  examples: |
+    - was gibt es [heute](day) für events ?
+    - was ist los [heute](day) ?
+    - was gibt es [morgen](day) für events ?
+    - was ist los [morgen](day) ?
+    
+   

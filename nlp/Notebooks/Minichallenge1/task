@@ -1,0 +1,35 @@
+Mini-Challenge 1 (LE3-LE5):
+
+Shared task: Text classification
+
+You evaluate 2 different systems on a text classification task.
+You argument why you chose these systems for that case and you build,
+train and evaluate the system. You also do a thorough error analysis and propose
+theories on how to improve the systems, especially also by analysing individual cases
+and comparing the predictions of each system. At least one of the systems is based on a
+fine-tuned deep learning model.
+
+Here you can use data from shared tasks, such as semeval, kaggle,
+codalab or paperwithcode for text classification.
+
+You can submit as a group of 2 but each one has to have a significant contribution.
+ Submission is given as a gitlab repo. I will track with the commit history if there was
+ a significant contribution from each participant. The repo should include the report,
+ a python notebook to reproduce the results and a wiki with a journal or git issues that
+ document the progress of your mini-challenge.
+
+Since many parts of code can be online, the most important part of the submission will be
+the report and evaluation of the results. In the report you describe which system you used,
+ which are the theory behind it and why you chose it. The evaluation you describe the metric
+ chose, why this metric is good for the use case and discuss the results of the experiments and
+ some predictions on individual test samples. Bonus points will be given if you show,
+ that you implemented the systems yourself, and the progress/errors are documented through commits.
+
+Some other starting points:
+
+    https://lionbridge.ai/articles/using-deep-learning-for-end-to-end-multiclass-text-classification/
+    https://medium.com/@qempsil0914/machine-learning-nlp-text-classification-with-amazon-review-data-using-python3-step-by-step-3fb0cc0cecc1
+    https://paperswithcode.com/task/text-classification
+    https://fbenites.github.io/GermEval/
+    https://medium.com/analytics-vidhya/fine-tuning-bert-language-model-to-get-better-results-on-text-classification-3dac5e3c348e
+    https://github.com/Shivampanwar/Bert-text-classification/blob/master/bert_language_model_with_sequence_classification.ipynb

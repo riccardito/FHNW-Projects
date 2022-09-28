@@ -1,0 +1,59 @@
+intents:
+  - greet
+  - goodbye
+  - affirm
+  - deny
+  - mood_great
+  - mood_unhappy
+  - bot_challenge
+  - weather_check
+  - pisten_check
+  - event_check
+
+entities:
+  - day
+  - weekday
+
+slots:
+  day:
+    type: text
+    influence_conversation: true
+    mappings:
+    - type: custom
+
+  weekday:
+    type: text
+    influence_conversation: true
+    mappings:
+    - type: custom
+
+responses:
+  utter_greet:
+  - text: "Guten Tag wie kann ich ihnen helfen"
+  - text: "Hallo, wie kann ich Ihnen helfen"
+
+  utter_cheer_up:
+  - text: "Hier ist etwas um dich aufzumuntern"
+    image: "https://i.imgur.com/nGF1K8f.jpg"
+
+  utter_did_that_help:
+  - text: "Hat das geholfen"
+
+  utter_happy:
+  - text: "Genial"
+
+  utter_goodbye:
+  - text: "Einen schönen Tag noch"
+
+  utter_iamabot:
+  - text: "Ich bin eine künstliche Intelligenz, erschaffen von natürlicher Intelligenz"
+
+
+actions:
+- action_check_weather
+- action_check_pisten
+- action_check_events
+
+session_config:
+  session_expiration_time: 60
+  carry_over_slots_to_new_session: true

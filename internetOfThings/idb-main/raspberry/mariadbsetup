@@ -1,0 +1,13 @@
+sudo mariadb
+####################
+CREATE DATABASE arduinodata;
+
+USE arduinodata;
+
+create table arduinodata(
+    id int auto_increment,
+    temperature int,
+    humidity int ,
+    date timestamp default current_timestamp,
+    primary key(id)
+);

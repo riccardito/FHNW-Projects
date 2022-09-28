@@ -1,0 +1,6 @@
+README.md
+setup.py
+regX_RICCARD.egg-info/PKG-INFO
+regX_RICCARD.egg-info/SOURCES.txt
+regX_RICCARD.egg-info/dependency_links.txt
+regX_RICCARD.egg-info/top_level.txt

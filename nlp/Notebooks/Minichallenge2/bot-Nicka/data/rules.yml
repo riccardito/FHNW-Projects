@@ -1,0 +1,32 @@
+rules:
+
+- rule: Say goodbye anytime the user says goodbye
+  steps:
+  - intent: goodbye
+  - action: utter_goodbye
+
+- rule: Say 'I am a bot' anytime the user challenges
+  steps:
+  - intent: bot_challenge
+  - action: utter_iamabot
+
+- rule: gives the weather forecast
+  steps:
+  - intent: weather_check
+  - action: action_check_weather
+
+- rule: calls all open pistens
+  steps:
+  - intent: pisten_check
+  - action: action_check_pisten
+
+- rule: answers events info
+  steps:
+  - intent: event_check
+  - action: action_check_events
+
+# simple fallback:
+- rule: Implementation of the simple-Fallback
+  steps:
+  - intent: nlu_fallback
+  - action: action_default_fallback

@@ -1,0 +1,73 @@
+# version: "3.1"
+
+# stories:
+# - story: Verkaufsstellen finden
+#   steps:
+#   - intent: get_places_to_by_ticket
+#   - action: utter_get_places_to_by_ticket
+
+# stories:
+# - story: Verkaufsstellen finden
+#   steps:
+#   - intent: get_places_to_by_ticket
+#   - action: utter_get_places_to_by_ticket
+
+
+# - story: information on tickets price
+#   steps:
+#   - intent: get_information_on_ticket_price
+#   - action: specify_ticket_form
+#   - active_loop: specify_ticket_form
+#   - slot_was_set:
+#     - requested_slot: ticket_type
+#   - slot_was_set:
+#     - ticket_type: Skipass
+#   - slot_was_set:
+#     - requested_slot: null # All the required slots have been filled
+#   - action: action_get_information_on_ticket_price
+  
+# - story: information on tickets price
+#   steps:
+#   - intent: greet
+#   - action: utter_greet
+#   - intent: get_ticket_types
+#   - action: action_get_ticket_types
+#   - intent: get_ticket_prices
+#   - action: action_get_ticket_prices
+
+# - story: sad path 2
+#   steps:
+#   - intent: greet
+#   - action: utter_greet
+#   - intent: mood_unhappy
+#   - action: utter_cheer_up
+#   - action: utter_did_that_help
+#   - intent: deny
+#   - action: utter_goodbye
+
+
+# - story: information on tickets price
+#   steps:
+#   - intent: get_information_on_ticket_price
+#   - action: utter_ask_ticket_type
+#   - intent: tell_ticket_type
+#   - checkpoint: specified_ticket_type
+  
+# - story: handle skipass price request
+#   steps:
+#   - checkpoint: specified_ticket_type
+#   - slot_was_set:
+#     - ticket_type: Skipass
+#   - action: utter_ask_ticket_place
+#   - intent: tell_ticket_place
+#   - action: utter_tell_specified_ticket_form
+#   - checkpoint: specified_skipass
+
+# - story: handle regionalpass price request
+#   steps:
+#   - checkpoint: specified_ticket_type
+#   - slot_was_set:
+#     - ticket_type: Regionalpass
+#   - action: utter_tell_specified_ticket_form
+#   - checkpoint: specified_regionalpass
+  
