@@ -7,7 +7,6 @@ setuptools.setup(
     name="regX-RICCARD",
     version="0.0.1",
     author="Riccard Nef",
-    author_email="riccard.nef@students.fhnw.ch",
     description="linearRegression",
     long_description=long_description,
     long_description_content_type="text/markdown",

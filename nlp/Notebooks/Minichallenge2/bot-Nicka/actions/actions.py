@@ -69,7 +69,7 @@ class ActionCheckWeather(Action):
         #    response = requests.request("GET", url, headers=headers, params=querystring)
         # except:
         with open(
-                "/home/riccardnef/PycharmProjects/nlp-projects/Notebooks/Minichallenge2/bot-Nicka/actions/src/weather.json") as json_file:
+                "bot-Nicka/actions/src/weather.json") as json_file:
             response = json.load(json_file)
 
         # simple weather check for today or tomorrow
@@ -137,12 +137,12 @@ class ActionCheckPisten(Action):
             domain: Dict[Text, Any]) -> List[Dict[Text, Any]]:
         if list(set(list(tracker.get_latest_entity_values("day"))))[0] == "heute":
             with open(
-                    "/home/riccardnef/PycharmProjects/nlp-projects/Notebooks/Minichallenge2/bot-Nicka/actions/src/pistenbericht.json") as json_file:
+                    "bot-Nicka/actions/src/pistenbericht.json") as json_file:
                 pistenbericht = json.load(json_file)
                 offen = sum(pistenbericht[item] for item in pistenbericht)
 
             with open(
-                    "/home/riccardnef/PycharmProjects/nlp-projects/Notebooks/Minichallenge2/bot-Nicka/actions/src/allpisten.json") as json_file:
+                    "bot-Nicka/actions/src/allpisten.json") as json_file:
                 allpisten = json.load(json_file)
                 total = sum(allpisten[item] for item in allpisten)
 

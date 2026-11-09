@@ -210,7 +210,7 @@ class ActionCheckWeather(Action):
         #    response = requests.request("GET", url, headers=headers, params=querystring)
         # except:
         with open(
-                "/home/riccardnef/PycharmProjects/nlp-projects/Notebooks/Minichallenge2/bot-Nicka/actions/src/weather.json") as json_file:
+                "bot-Nicka/actions/src/weather.json") as json_file:
             response = json.load(json_file)
 
         # simple weather check for today or tomorrow
@@ -275,12 +275,12 @@ class ActionCheckPisten(Action):
             domain: Dict[Text, Any]) -> List[Dict[Text, Any]]:
         if list(set(list(tracker.get_latest_entity_values("day"))))[0] == "heute":
             with open(
-                    "/home/riccardnef/PycharmProjects/nlp-projects/Notebooks/Minichallenge2/bot-Nicka/actions/src/pistenbericht.json") as json_file:
+                    "bot-Nicka/actions/src/pistenbericht.json") as json_file:
                 pistenbericht = json.load(json_file)
                 offen = sum(pistenbericht[item] for item in pistenbericht)
 
             with open(
-                    "/home/riccardnef/PycharmProjects/nlp-projects/Notebooks/Minichallenge2/bot-Nicka/actions/src/allpisten.json") as json_file:
+                    "bot-Nicka/actions/src/allpisten.json") as json_file:
                 allpisten = json.load(json_file)
                 total = sum(allpisten[item] for item in allpisten)
 
@@ -316,7 +316,7 @@ class ActionCheckEvents(Action):
             domain: Dict[Text, Any]) -> List[Dict[Text, Any]]:
 
         day = list(set(list(["heute"])))[0]  #############
-        df = pd.read_csv("/home/riccardnef/PycharmProjects/nlp-projects/Notebooks/Minichallenge2/bot-Gian/actions/events.csv")
+        df = pd.read_csv("bot-Gian/actions/events.csv")
         today = date.today()
         tomorrow = datetime.today() + timedelta(days=1)
         tomorrow = tomorrow.strftime("%Y-%m-%d")
@@ -357,7 +357,7 @@ class ActionDefaultFallback(Action):
 
         try:
 
-            with open("/home/riccardnef/PycharmProjects/nlp-projects/Notebooks/Minichallenge2/bot-Gian/actions/src/keys.json") as json_file:
+            with open("bot-Gian/actions/src/keys.json") as json_file:
                 gptkey = json.load(json_file)["key"]
                 openai.api_key = gptkey
                 response = openai.Completion.create(engine="text-davinci-002", prompt=text, temperature=0.1,max_tokens=60)
