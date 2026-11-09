@@ -1,6 +1,6 @@
 # nlp
 
-**Course:** Natural Language Processing (FHNW BSc Data Science) · **When:** 2022 · **Authors:** Riccard Nef; Mini-Challenge 1 with ⟨name, consent pending⟩; Mini-Challenge 2 with ⟨four names, consent pending⟩
+**Course:** Natural Language Processing (FHNW BSc Data Science) · **When:** 2022 · **Authors:** Riccard Nef; Mini-Challenge 1 with a classmate; Mini-Challenge 2 with four classmates
 
 ## What this is
 

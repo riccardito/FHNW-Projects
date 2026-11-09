@@ -1,6 +1,6 @@
 # Recommendersystems
 
-**Course:** Recommender Systems (`rsy`, FHNW BSc Data Science) · **When:** 2022 · **Authors:** Riccard Nef; Mini-Challenge 2 with ⟨name, consent pending⟩
+**Course:** Recommender Systems (`rsy`, FHNW BSc Data Science) · **When:** 2022 · **Authors:** Riccard Nef; Mini-Challenge 2 with a classmate
 
 ## What this is
 

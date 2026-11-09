@@ -26,7 +26,7 @@ This is an archive, not a showcase. The notebooks are the ones I handed in — o
 
 ## Credits
 
-The work is mine unless a folder README says otherwise. Two Minichallenges and one report were team work; the teams are named there, with their consent.
+The work is mine unless a folder README says otherwise. Two Minichallenges and one report were team work; the folder READMEs say so.
 
 ## Licence
 

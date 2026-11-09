@@ -1,6 +1,6 @@
 # Probabilities
 
-**Course:** Probability & Statistics Challenge (HS19 C4, "Steinschlag") · **When:** autumn 2019 · **Authors:** Riccard Nef, ⟨name, consent pending⟩, ⟨name, consent pending⟩
+**Course:** Probability & Statistics Challenge (HS19 C4, "Steinschlag") · **When:** autumn 2019 · **Authors:** Riccard Nef and two classmates
 
 ## What this is
 
