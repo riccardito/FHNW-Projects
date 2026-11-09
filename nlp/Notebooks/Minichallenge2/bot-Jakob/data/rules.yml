@@ -1,0 +1,52 @@
+version: "3.1"
+
+rules:
+
+- rule: Say goodbye anytime the user says goodbye
+  steps:
+  - intent: goodbye
+  - action: utter_goodbye
+
+- rule: Say 'I am a bot' anytime the user challenges
+  steps:
+  - intent: bot_challenge
+  - action: utter_iamabot
+
+
+- rule: Get the availlable ski tickets
+  steps:
+  - intent: get_ticket_types
+  - action: action_get_ticket_types
+
+
+- rule: Get information on ski tickets
+  steps:
+  - intent: get_information_on_ticket_type
+  - action: action_get_information_on_ticket_type
+
+- rule: Get ticket seller locations
+  steps:
+  - intent: get_places_to_by_ticket
+  - action: utter_get_places_to_by_ticket
+
+
+- rule: Activate specify_ticket_form
+  steps:
+  - intent: get_ticket_prices
+  - action: specify_ticket_form
+  - active_loop: specify_ticket_form
+
+
+- rule: Submit specify_ticket_form
+  condition:
+  # Condition that form is active.
+  - active_loop: specify_ticket_form
+  steps:
+  # Form is deactivated
+  - action: specify_ticket_form
+  - active_loop: null # The form has been completed
+  - slot_was_set:
+    - requested_slot: null # All the required slots have been filled
+  - action: utter_tell_specified_ticket_form
+  - action: action_get_information_on_ticket_price
+

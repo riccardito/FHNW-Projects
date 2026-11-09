@@ -1,0 +1,30 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+```{r}
+library("recommenderlab")
+data("MovieLense")
+### use only users with more than 100 ratings
+MovieLense100 <- MovieLense[rowCounts(MovieLense) >100,]
+print(MovieLense100)
+
+```
+
+Type any R code in the chunk, for example:
+```{r}
+train <- MovieLense100[1:50]
+rec <- Recommender(train, method = "UBCF")
+rec
+```
+```{r}
+pre <- predict(rec, MovieLense100[101:102], n = 10)
+pre
+```
+```{r}
+as(pre, "list")
+
+```
+
+
+

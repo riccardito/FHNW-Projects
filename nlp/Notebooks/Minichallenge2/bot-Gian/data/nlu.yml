@@ -1,0 +1,254 @@
+version: "3.1"
+
+nlu:
+- regex: ticket_place
+  examples: |
+    - Rinerhorn
+    - Jakobshorn & Parsenn
+    - Pischa
+    - Madrisa
+    - Parsenn
+    - Ganze Region
+
+- regex: ticket_type
+  examples: |
+    - Skipässen
+    - Skipass
+    - Regionalpass
+    - Regionalpässe
+    - Wahlkarte
+    - Wahlkarten
+    - Wahlabo
+    - Wahlabos
+
+- regex: place
+  examples: |
+    - Davos
+    - davos
+    - Klosters
+    - klosters
+    - Davos-Klosters
+
+- regex: ticket_type_request
+  examples: |
+    - Skipässen
+    - Skipass
+    - Regionalpass
+    - Regionalpässe
+    - Wahlkarte
+    - Wahlkarten
+    - Wahlabo
+    - Wahlabos
+
+- regex: day
+  examples: |
+    - heute
+    - morgen
+
+- regex: weekday
+  examples: |
+    - Montag
+    - Dienstag
+    - Mittwoch
+    - Donnerstag
+    - Freitag
+    - Samstag
+    - Sonntag
+
+- intent: greet
+  examples: |
+    - hallo
+    - guten tag
+    - guten abend
+    - grüezi
+    - grüeziwohl
+    - ich grüsse sie
+    - seien sie gegrüsst
+
+
+- intent: goodbye
+  examples: |
+    - auf wiedersehen
+    - ade
+    - tschau
+    - gute nacht
+    - bye
+    - bye bye
+    - einen schönen tag noch
+    - einen schönen tag
+
+
+- intent: affirm
+  examples: |
+    - ja
+    - yes
+    - jap
+    - natürlich
+    - das hört sich gut an
+    - korrekt
+
+
+- intent: deny
+  examples: |
+    - no
+    - nein
+    - nie
+    - Ich denke nicht
+    - nicht wirklich
+
+
+- intent: mood_great
+  examples: |
+    - perfekt
+    - grossartig
+    - fühle mich wie ein König
+    - wundervoll
+    - Ich fühle mich gut
+    - Mir geht es grossartig
+    - Ich bin grossartig
+    - Ich werde die Welt retten
+    - super stoked
+    - extrem gut
+    - einigermassen
+    - den umständen entsprechend
+
+
+- intent: get_ticket_types
+  examples: |
+    - Was für Tickets gibt es für [Davos](place)?
+    - Welche Tickets sind verfügbar?
+    - Welche Abos sind verfügbar?
+    - Was kann ich für Skipässe kaufen?
+    - Welche Skipässe gibt es für [Davos-Klosters](place)?
+    - Welche Arten von Tickets sind verfügbar?
+    - Was für Tickets sind erhältlich?
+    - Zeig mir die verfügbaren Skitickets.
+
+
+- intent: get_ticket_prices
+  examples: |
+    - Was sind die Preise für [Wahlabos](ticket_type)?
+    - Wie viel kostet eine Tageskarte?
+    - Wie teuer ist eine Tageskarte?
+    - Ich brauche ein Skiticket für einen Tag
+    - Was kostet eine [Wahlkarte](ticket_type)?
+    - Ich möchte die preise für einen [Skipass](ticket_type) sehen.
+    - Wie teuer ist ein [Wahlabo](ticket_type) fürs [Jakobshorn](ticket_place) ?
+    - Wie teuer ist ein [Regionalpass](ticket_type)?
+    - Ski Ticket Preise für [Jakobshorn & Parsenn](ticket_place).
+    - Kannst du mir die Ticketpreise für ["Madrisa"](ticket_place) zeigen?
+    - Zeig mir die Preise für ein Skiticket
+    - Wie teuer ist ein Skiticket?
+    - Was sind die Preise für Skitickets in [Davos](place)?
+    - Was kostet eine Tageskarte für Davos?
+    - Wie teuer sind Skitickets in Davos?
+
+
+- intent: get_information_on_ticket_type
+  examples: |
+    - Was kann der [Skipass](ticket_type_request)?
+    - Was kann ich mit dem [Wahlabo](ticket_type_request) machen?
+    - Wo ist das [Wahlabo](ticket_type_request) gültig?
+    - Kann ich mehr Informationen zur [Wahlkarte](ticket_type_request) erhalten?
+    - Wofür kann ich [Wahlkarten](ticket_type_request) nutzen?
+    - Ich möchte mehr Infos zu [Skipässen](ticket_type_request)
+    - Ich möchte mehr Informationen zum [Regionalpass](ticket_type_request).
+    - Was ist ein [Regionalpass](ticket_type_request)?
+
+
+- intent: tell_ticket_place
+  examples: |
+    - Ich möchte ein Ticket für [Parsenn](ticket_place)
+    - Aufs [Jakobshorn](ticket_place)
+    - Den Lift bei [Pischa](ticket_place)
+    - Ich will auf der [Madrisa](ticket_place) Skifahren.
+    - Ich will aufs [Rinerhorn](ticket_place).
+    - Für die [ganze Region](ticket_place)
+    - Für [Madrisa](ticket_place)
+
+
+- intent: tell_ticket_type
+  examples: |
+    - Ich möchte ein [Skipass](ticket_type)
+    - Das [Wahlabo](ticket_type) bitte
+    - Ich will ein [Wahlkarte](ticket_type) kaufen
+    - Wir brauchen den [Regionalpass](ticket_type)
+
+
+- intent: get_places_to_by_ticket
+  examples: |
+    - Wo kann ich ein [Wahlabo](ticket_type) kaufen?
+    - Wo erhalte ich ein Skiticket?
+    - An welchen Orten kann ich eine Tageskarte kaufen?
+    - Wo sind Billet Verkaufsstellen?
+    - Ich möchte wissen wo ich ein Ticket kaufen kann.
+    - Wo sind Verkaufsstellen für [Skipass](ticket_type)?
+    - Wo in [Davos](place) kann ich ein [Regionalpass](ticket_type) kaufen?
+
+
+
+- intent: bot_challenge
+  examples: |
+    - bist du ein bot?
+    - bist du ein mensch?
+    - rede ich mit einem bot?
+    - rede ich mit einem menschen?
+
+- intent: weather_check
+  examples: |
+    - wie ist das wetter [heute](day)?
+    - ist das wetter [heute](day) gut?
+    - wie ist das wetter [morgen](day)?
+    - ist das wetter [morgen](day) gut?
+    - wie ist das wetter [morgen](day) in der nähe?
+    - ist es [heute](day) schön ?
+    - wie ist das wetter von [heute](day) bis [Freitag](weekday)?
+    - ist das wetter von [heute](day) bis [Freitag](weekday) gut?
+    - wie ist das wetter von [morgen](day) bis [Freitag](weekday)?
+    - ist das wetter von [morgen](day) bis [Freitag](weekday) gut?
+    - wie ist das wetter von [morgen](day) bis [Freitag](weekday) in der nähe?
+    - ist es von [heute](day) bis [Freitag](weekday) schön ?
+    - wie ist das Wetter von [Mittwoch](weekday) bis [Freitag](weekday)?
+    - wie ist das Wetter von [Donnerstag](weekday) bis [Freitag](weekday)?
+    - wie ist das Wetter von [Montag](weekday) bis [Mittwoch](weekday)?
+    - wie ist das Wetter von [Freitag](weekday) bis [Montag](weekday)?
+
+
+- intent: pisten_check
+  examples: |
+    - sind die pisten [heute](day) offen?
+    - ist die Anlage [heute](day) offen?
+    - laufen die Lifte [heute](day) ?
+    - kann man [heute](day) skifahren?
+
+- intent: event_check
+  examples: |
+    - was gibt es [heute](day) für events ?
+    - was ist los [heute](day) ?
+    - was gibt es [morgen](day) für events ?
+    - was ist los [morgen](day) ?
+
+
+#- intent: nlu_fallback
+#  examples: |
+#    - Ich will eine Pizza bestellen.
+#    - Was ergibt 2 + 2?
+#    - Wer ist der Präsident der USA?
+
+
+- intent: get_mountain_railways
+  examples: |
+    - Welche Bergbahnen gibt es?
+    - Was für Bergbahnen gibt es in [Davos](Place)?
+    - Welche Skipisten gibt es?
+    - Wo gibt es Skilifte?
+    - Auf Welche Berge kann man mit der Bahn?
+    - Was für Skilifte gibt es?
+
+- intent: thank_you
+  examples: |
+    - Vielen Dank
+    - Dankeschön
+    - Super, danke.
+    - Danke
+    - Merci

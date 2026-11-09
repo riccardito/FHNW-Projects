@@ -1,0 +1,143 @@
+#### This file contains tests to evaluate that your bot behaves as expected.
+#### If you want to learn more, please see the docs: https://rasa.com/docs/rasa/testing-your-assistant
+
+stories:
+# ask for ticket locations and pountain railways
+- story: Ask for ticket locations and mountain railways
+  steps:
+  - user: |
+      Hallo
+    intent: greet
+  - action: utter_greet
+  - user: |
+      Wo kann ich ein Skiticket kaufen? 
+    intent: get_places_to_by_ticket
+  - action: utter_get_places_to_by_ticket
+  - user: |
+      Was gibt es denn für Bergbahnen in Davos?
+    intent: get_mountain_railways
+  - action: utter_get_mountain_railways
+
+
+  # Inform on ticket types and get info on specific ticket type
+- story: Inform on ticket types and get info on specific ticket type
+  steps:
+  - user: |
+      Guten Tag
+    intent: greet
+  - action: utter_greet
+  - user: |
+      Was gibt es für Ticketes in Davos?
+    intent: get_ticket_types
+  - action: action_get_ticket_types
+  - user: |
+      Wofür kann ich den [Skipass](ticket_type_request) verwenden?
+    intent: get_information_on_ticket_type
+  - action: action_get_information_on_ticket_type
+  
+
+- story: weather_check_today
+  steps:
+  - user: |
+      Hallo
+    intent: greet
+  - action: utter_greet
+  - user: |
+      Wie ist das Wetter heute ?
+    intent: weather_check
+  - action: action_check_weather
+
+
+- story: weather_check_tomorrow
+  steps:
+  - user: |
+      Hallo
+    intent: greet
+  - action: utter_greet
+  - user: |
+      Wie ist das Wetter morgen ?
+    intent: weather_check
+  - action: action_check_weather
+
+- story: weather_check_MoTODo
+  steps:
+  - user: |
+      Hallo
+    intent: greet
+  - action: utter_greet
+  - user: |
+      Wie ist das Wetter von Montag bis Donnerstag ?
+    intent: weather_check
+  - action: action_check_weather
+
+
+- story: weather_check_TodayTODo
+  steps:
+  - user: |
+      Hallo
+    intent: greet
+  - action: utter_greet
+  - user: |
+      Wie ist das Wetter von heute bis Donnerstag ?
+    intent: weather_check
+  - action: action_check_weather
+
+- story: weather_check_TomorrowTODo
+  steps:
+  - user: |
+      Hallo
+    intent: greet
+  - action: utter_greet
+  - user: |
+      Wie ist das Wetter von morgen bis Donnerstag ?
+    intent: weather_check
+  - action: action_check_weather
+
+# Pisten:
+- story: check if pistens are open
+  steps:
+  - user: |
+      Hallo
+    intent: greet
+  - action: utter_greet
+  - user: |
+      Sind die Pisten heute ofen ?
+    intent: pisten_check
+  - action: action_check_pisten
+
+- story: check if pistens are open today
+  steps:
+  - user: |
+      Hallo
+    intent: greet
+  - action: utter_greet
+  - user: |
+      Ist die Anlage heute in Betrieb?
+    intent: pisten_check
+  - action: action_check_pisten
+
+
+# Events:
+- story: check whats events are today
+  steps:
+  - user: |
+      Hallo
+    intent: greet
+  - action: utter_greet
+  - user: |
+      Was für Events gibt es heute ?
+    intent: event_check
+  - action: action_check_events
+
+
+# Fallback:
+- story: fallbackstory
+  steps:
+  - user: |
+      Hallo
+    intent: greet
+  - action: utter_greet
+  - user: |
+      Ich will eine Pizza bestellen.
+    intent: nlu_fallback
+  - action: action_default_fallback

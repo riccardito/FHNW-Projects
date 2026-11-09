@@ -1,0 +1,41 @@
+{
+  "meta": [
+    {
+      "bachtsize": 32,
+      "learningrate": 0.001,
+      "optimzer": ["Adam"],
+      "outputsize": 101,
+      "inputsize": 3
+    }
+  ],
+  "cnnmodel": [
+    {
+      "meta": [
+        {
+          "num_layers": 10
+        }
+      ]
+    },
+    {
+      "feature_block": [
+        {
+          "kernelsize_1": 3,
+          "stride_1": 2,
+          "padding_1": 1,
+          "outpt_1": 64,
+          "scalar_factor": 2
+        }
+      ]
+    },
+    {
+      "cnn_block": [
+        {
+          "kernelsize_2": 3,
+          "stride_2": 2,
+          "padding_2": 1,
+          "outpt_1": 64
+        }
+      ]
+    }
+  ]
+}

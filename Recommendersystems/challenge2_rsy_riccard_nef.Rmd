@@ -1,0 +1,612 @@
+---
+title: "Recommender Systems - Mini-Challenge 2"
+author: "Ricchard Nef, Mojzis Masár"
+date: "4/27/2022"
+output: html_document
+---
+
+## Ablauf
+## 1. Teil
+### 1.1 Einlesen von MovieLense
+```{r libaries import,include=FALSE}
+data(MovieLense)
+library(recommenderlab)
+library(tidyverse)
+library(ggplot2)
+library(plotly)
+library(fmsb)
+data("MovieLense")
+```
+Es werden die nötigsten Libraries eingelesen
+
+
+```{r a1_1, include=FALSE}
+ratings <- as(MovieLense, 'data.frame')
+users <- as(MovieLenseUser, 'data.frame')
+movies <- as(MovieLenseMeta, 'data.frame')
+```
+Der Datensatz wird in seine Bestandteile aufgeteilt. Bei `ratings` haben wir pro
+User und Film eine einzige Beweertung. 
+Unter `users` haben wir zusätzliche Informationen zu jedem User, wie sein Alter, 
+Beruf, Geschlecht und Wohnort. In unserer Analyse sind diese Daten nicht weiter 
+relevant. 
+Beim Datensatz `movies` interesieren uns die Genres, welche in der weiteren 
+Analyse von grossem Wert sein werden.
+
+
+### 1.2 Binäre User-Liked-Items Matrix für alle Nutzer erzeugen.
+```{r a1_2_1}
+# binary liked-items matrix
+bin_rating_matrix <- ratings %>%
+    mutate(rating = ifelse(ratings$rating > 3, 1, 0)) %>%
+        pivot_wider(id_cols = "user",names_from = "item", values_from = "rating")
+# set index
+row.names(bin_rating_matrix) <- bin_rating_matrix$user
+# drop user column
+bin_rating_matrix[1] <- NULL
+
+```
+Im gesamten MovieLense Datensatz haben wir `r dim(users)[1]` Personen und 
+`r dim(movies)[1]` Filme. 
+In diesem Script haben wir uns entschieden, dass Filme mit ener Bewertung über 3
+als gut Bewertet werden (1) und die anderen nicht (0). Das brauchen wir um zu 
+wissen, welche Filme dem Nutzer gefallen und nicht. Wenn man diesen Wert zu weit 
+runter setzt, kann es sein, dass man zu viele Empfehlungen bekommet und so die
+minimale Ähnlichkeit abnimmt. Um diesen Defizit zu umgehen, muss man ein 
+Gleichgewicht finden zwischen Über- und Unterbeweertung der Ratings. 
+
+
+### 1.3.Dimension der User-Liked-Items Matrix prüfen und ausgeben.
+```{r a1_3}
+# dimensions of the liked-items matrix
+dim(bin_rating_matrix)
+```
+Wir überprüfen nun ob die neue binäre Tabelle weiterhin das richtigen Ausmass
+behält und keine Filme oder User verloren gegangen sind. Da wir sehen, dass die
+Matrix immeer noch `r dim(bin_rating_matrix)[1]` x `r dim(bin_rating_matrix)[2]` 
+ist, können wir unbesorgt weiterfahren. 
+
+
+### 1.4.Movie-Genre Matrix für alle Filme erzeugen.
+```{r a1_4}
+# movie-genre matrix
+movies_genre <- movies
+rownames(movies_genre) <- movies_genre$title
+movies_genre <- movies_genre %>%
+  select(-c(year, url, title))
+
+movies_genre <- as.matrix(movies_genre)
+```
+Wir nehemn in diesem Schritt die `movies` Tabelle und werfen alle Variablen raus, 
+welche uns nicht mehr von Nutzen sind. Das ist das Erscheinungsjahr und die 
+[Webseite der Bewertungen und Informationen][http://us.imdb.com]. des jeweiligen
+Filmes. Zusätzlich haben wir den Namen der Filme als Zeilennamen konfiguriert. 
+
+
+### 1.5.Dimension der Movie-Genre Matrix prüfen und ausgeben.
+```{r a1_5}
+# dimensions of the movie-genre matrix
+dim(movies_genre)
+```
+Diese neue Matrix hat eine Dimension von `r dim(movies_genre)[1]` x `r dim(movies_genre)[2]`. 
+Diese Zahlen zeigen uns, dass wir in dieser Tabelle alle `r dim(movies_genre)[1]` 
+Filme mit `r dim(movies_genre)[2]` verfügbaren Genres haben.
+
+
+### 1.6 Anzahl unterschiedlicher Filmprofile bestimmen und visualisieren.
+```{r a1_6}
+gen_pro <- as.data.frame(movies_genre)
+gen_pro <- map2_df(gen_pro, colnames(gen_pro), ~  c(NA, .y)[.x +1]) 
+#set names instead of value 1
+
+gen_pro <- gen_pro %>% 
+  group_by_all() %>% #group all possible film-profiles
+  summarize(count = n()) %>%
+  arrange(desc(count)) %>% 
+  ungroup()
+
+namen = names(gen_pro)[-20]
+
+film_profil <- gen_pro %>%
+  mutate_at(vars(namen), as.character) %>% 
+  unite(Profile, namen, sep="-",na.rm=TRUE) %>% #set variable with combined names
+  mutate(Profile=ifelse(Profile %in% head(Profile, 30),
+                        Profile, "Others combined" )) %>% 
+  mutate(Profile=factor(Profile, levels=unique(Profile))) %>% 
+  group_by(Profile) %>% 
+  summarize(count=sum(count))
+
+film_profil$Profile <- as.character(film_profil$Profile)
+
+film_profil <- film_profil %>% arrange(Profile)
+
+ggplot(film_profil)+
+  geom_col(aes(x=film_profil$count, 
+               y=film_profil$Profile, 
+               fill=factor(ifelse(Profile=="Others combined", 
+                                  "Others combined", "Profile"))),
+           show.legend = FALSE)+
+  scale_fill_manual(name="Profile", values = c("red", "grey50"))+
+  scale_y_discrete(limits=rev)+
+  labs(x="Anzahl Filme", 
+       y="", 
+       title = "Verteilung der Filme nach Genre-Kombination", 
+       subtitle = paste("(Top-30 Kombinationen von insgesamt", dim(gen_pro)[1],
+       ")"))
+```
+
+Es gibt insgesamt `r dim(film_profil)[1]` unterschiedliche Filmprofile.
+
+Man kann sehen, dass das am meisten vorkommente Genre-Profil Drama ist mit 
+`r film_profil[[2]][21]` Vorkommnissen, gefolgt von Comedy mit 
+`r film_profil[[2]][12]`. Die restliche 186 Genre-Profile, welche nicht mehr auf 
+dieser Visualisierung vorzufinden sind, kommen insgesamt `r film_profil[[2]][28]`
+mal vor.
+
+
+### 1.7.User-Genre-Profil Matrix mit Nutzerprofilen im Genre-Vektorraum erzeugen.
+```{r a1_7}
+# user-genre-profile matrix
+bin_rating_matrix_1_7 <- as.matrix(bin_rating_matrix) %>% 
+  replace(is.na(.), 0)
+
+user_genre <-  bin_rating_matrix_1_7 %*% movies_genre
+
+head(user_genre, 3)
+```
+In dieser Matrix sieht man wie viele Genres jede Person gesehen hat. Mit dieser
+Matrix haben wir ein Profil von jeder Person und können so sehen, wer wem 
+ähnlich ist und dementsprechend Filme empfehlen. Bei diesen drei Personen sieht 
+man, dass sie recht unterschiedlich sind. Wärend wir von der ersten Person ein 
+recht eindeutiges Profil haben ( Sie hat eine Vorliebe für Drama, Comedy und 
+Action, geniesst aber gerne einen Romantischen Abend mit ihrem Partner), können 
+wir von der dritten Person nur sagen, dass sie eine Tendenz für Drama, Mystery 
+und Thriller hat. Im Verhältnis zu der Menge der Filme die sie geschaut hat, 
+können wir aber noch kein klares Profil erkennen. 
+
+
+### 1.8.Dimension der User-Genre-Profil Matrix prüfen und ausgeben.
+```{r a1_8}
+# dimensions of the user-genre-profile matrix
+dim(user_genre)
+```
+Hier sehen wir nochmals, dass diese Matrix alle `r dim(user_genre)[1]` Kunden 
+beinhaltet sowie alle `r dim(user_genre)[2]` Genres.
+
+
+### 1.9.Anzahl unterschiedlicher Nutzerprofile bestimmen, wenn Stärke der GenreKombination (a) vollständig bzw. (b) nur binär berücksichtigt wird
+```{r a1_9_1}
+# vollständig
+rating_matrix <- ratings %>%
+        pivot_wider(id_cols = "user",names_from = "item", values_from = "rating")
+# set index
+row.names(rating_matrix) <- rating_matrix$user
+# drop user column
+rating_matrix[1] <- NULL
+```
+
+
+```{r a1_9_2}
+# vollständig
+n_profile_v <- rating_matrix
+```
+Es gibt insgesamt `r sum(unique(n_profile_v))` unterschiedliche Nutzerprofile.
+
+`
+```{r a1_9_3}
+# nur binär
+n_profile_b <- bin_rating_matrix %>%
+mutate(across(.cols = everything(), .fns = ~
+  ifelse(.x > 3, 1, 0)))
+```
+Es gibt insgesamt `r sum(unique(n_profile_b))` unterschiedliche binäre Nutzerprofile.
+
+
+## 2.Ähnlichkeit von Nutzern und Filmen
+
+### 2.1.Cosinus-Ähnlichkeit zwischen User-Genre- und Movie-Genre-Matrix berechnen.
+
+Funktion zur Berechnung von Cosinus-Ähnlichkeiten zweier Matrizen namens
+calc_cos_similarity_twomtrx() implementieren, um Nutzerprofile
+und Filme im Vektorraum der Genres zu vergleichen. Die richtige
+Funktionsweise soll an einem einfachen Beispiel getestet und dokumentiert
+werden.
+
+```{r a2_1}
+calc_cos_similarity_twomtrx <- function (user_genre, movies_genre) {
+  # check dimensions
+  if (dim(user_genre)[2] != dim(movies_genre)[2]) {
+    stop("Dimensions of user_genre and movies_genre do not match")
+  }
+  
+  #calculate cosine similarity between user-genre-profile matrix and movie-genre-profile matrix
+  ug_2 <- user_genre*user_genre
+  mg_2 <- movies_genre*movies_genre
+  user_genre_norm <- user_genre / sqrt(rowSums(ug_2))
+  movies_genre_norm <- movies_genre / sqrt(rowSums(mg_2))
+
+  # calculate t crossproduct
+  t <- tcrossprod(user_genre_norm, movies_genre_norm)
+  return(t)
+}
+```
+
+
+```{r a2_1_1}
+(A <- matrix(c(1, 2, 0, 4), nrow = 2, ncol = 2, byrow = TRUE))
+(B <- matrix(c(1, 0, 0, 1), nrow = 2, ncol = 2, byrow = TRUE))
+
+calc_cos_similarity_twomtrx(A, B)
+```
+Anhand dieses einfaches Beispieles können wir überprüfen, dass die Formel der 
+Cosinus-Similarity richtig berechnet wird.
+Wir werden die Formel dazu benutzen, die Cosinus-Similarity für alle Filme von 
+allen User zu berechnen um in einem späteren Zeitpunk die besten herauszufiltern 
+und somit gute Empfehlungen machen zu können. 
+
+
+```{r a2_1_2}
+# cosinus similarity between user-genre- and movie-genre-matrices
+cos_2_1 <- calc_cos_similarity_twomtrx(user_genre, movies_genre)
+```
+
+### 2.2. Dimension der Matrix der Cosinus-Ähnlichkeiten von Nutzern und Filmen prüfen uns ausgeben.
+```{r a2_2}
+dim(cos_2_1)
+```
+Wir sehen anhand der Grösse der resultierenden Matzrix, dass wir für jede der 
+`r dim(cos_2_1)[1]` Personen Werte über alle `r dim(cos_2_1)[2]` Filme haben
+
+
+### 2.3. 5-Zahlen Statistik für Matrix der Cosinus-Ähnlichkeiten prüfen und 
+ausgeben.
+```{r a2_3}
+q_cos <- quantile(cos_2_1,probs = c(0.25,0.5,0.75), na.rm = TRUE)
+```
+Der **minimale** Wert der Cosinus-Ähnlichkeitsmatrix beträgt `r min(cos_2_1, na.rm = TRUE)`.
+Die **25-Perzentile** der Cosinus-Ähnlichkeitsmatrix liegt bei `r q_cos[[1]]`.
+Der **Mittelwert** der Cosinus-Ähnlichkeitsmatrix ist `r q_cos[[2]]`.
+Die **75-Perzentile** der Cosinus-Ähnlichkeitsmatrix liegt bei `r q_cos[[3]]`.
+Der **maximale** Wert der Cosinus-Ähnlichkeitsmatrix beträgt `r max(cos_2_1, na.rm = TRUE)`.
+
+
+### 2.4.Cosinus-Ähnlichkeiten von Nutzern und Filmen mit Dichteplot visualisieren.
+```{r a2_4}
+# Kernel Density Plot
+cos_2_1_Nona <- cos_2_1 %>%
+        replace(is.na(.), 0)
+
+plot(density(cos_2_1_Nona), main="Verteilung der Werte der Cosinus-Similarity Matrix")
+
+p0 <- round((sum(cos_2_1_Nona==0)/length(cos_2_1_Nona))*100, 2)
+```
+
+Bei der Grafik der Verteilung der Werte der Cosinus-Similarity Matrix ist zu 
+beobachten, dass es eine Spitze gibt für die Bewertung 0. Dies kann davon 
+kommen, dass viele Personen nur wenige Filme angeschaut haben. Daher werden für 
+Filme welche ein völlig anderes Genre haben, eine Empfehlung von 0 oder sehr 
+gering abgiebt. 
+Insgesamt haben `r p0`% der Filme ein vorausgesagte Bewertung von 0.
+
+
+### 2.5.Cosinus-Ähnlichkeiten von Nutzern und Filmen mit Dichteplot für Nutzer
+“241”, “414”, “477”, “526”, “640” und “710” visualisieren.
+```{r a2_5}
+c241 <- 1664-rowSums(is.na(rating_matrix[241,]))
+c414 <- 1664-rowSums(is.na(rating_matrix[414,]))
+c477 <- 1664-rowSums(is.na(rating_matrix[477,]))
+c526 <- 1664-rowSums(is.na(rating_matrix[526,]))
+c640 <- 1664-rowSums(is.na(rating_matrix[640,]))
+c710 <- 1664-rowSums(is.na(rating_matrix[710,]))
+
+plot(density(cos_2_1_Nona[241,]), sub = paste(c241, "geschaute Filme"))
+plot(density(cos_2_1_Nona[414,]), sub = paste(c414, "geschaute Filme"))
+plot(density(cos_2_1_Nona[477,]), sub = paste(c477, "geschaute Filme"))
+plot(density(cos_2_1_Nona[526,]), sub = paste(c526, "geschaute Filme"))
+plot(density(cos_2_1_Nona[640,]), sub = paste(c640, "geschaute Filme"))
+plot(density(cos_2_1_Nona[710,]), sub = paste(c710, "geschaute Filme"))
+```
+
+Anhand dieser Plots sieht man die Verteilung der vorergesagten Bewertungen 
+sehen. In den Bewertungen an sich gibt es keinen Zusammenhang zwischen der 
+Anzahl gesehener Filme und den Bewertungen. Man sieht jedoch ob ein Nutzer 
+vorwiegend gute oder schlechte Bewertungen abgibt. 
+
+
+# 3. Empfehlbare Filme
+
+### 3.1 Bewertete Filme maskieren, d.h. “Negativabzug” der User-Items 
+Matrixerzeugen, um anschliessend Empfehlungen herzuleiten.
+```{r a3_1}
+#negativabzug for recommendations
+bin_rating_matrix_nabz <- bin_rating_matrix %>%
+        replace(!is.na(.), FALSE) %>%
+        replace(is.na(.), TRUE)
+
+#Positivabzug for further analysis
+bin_rating_matrix_pos <- bin_rating_matrix %>% 
+        replace(!is.na(.), TRUE) %>% 
+        replace(is.na(.), FALSE)
+```
+
+
+### 3.2 Zeilensumme des “Negativabzuges” der User-Items Matrix für die User 
+“5”,“25”, “50” und “150” ausgeben.
+```{r a3_2}
+# calculate sum of not rated movies from costumer 5,25,50,150
+bin_rating_matrix_nabz_sums <- bin_rating_matrix_nabz %>% 
+  slice(c(5,25,50,150)) %>% 
+  rowSums()
+
+bin_rating_matrix_nabz_sums
+```
+Diese Zahlen zeigen uns, dass diese Personen entsprechende Anzahl Filme *nicht* 
+gesehen haben. 
+Die Person 5 hat `r bin_rating_matrix_nabz_sums[1]` Filme nicht gesehen, Person
+25 hat `r bin_rating_matrix_nabz_sums[2]` nicht gesehen etc..
+
+
+### 3.3 5-Zahlen Statistik der Zeilensumme des “Negativabzuges” der User-Items Matrix bestimmen.
+```{r a3_3}
+# 5 number statistic of bin_rating_matrix_nabz_sums_all
+bin_rating_matrix_nabz_sums_all <- bin_rating_matrix_nabz %>% rowSums()
+min_3_3 <- min(bin_rating_matrix_nabz_sums_all)
+cat(" Min         = ",min_3_3,"\n")
+q_3_3 <- quantile(bin_rating_matrix_nabz_sums_all,probs = c(0.25,0.5,0.75))
+cat(" 25% quartil = ",q_3_3[1],"\n","Median      = ",q_3_3[2],"\n", "75% quartil = ",q_3_3[3],"\n")
+max_3_3 <- max(bin_rating_matrix_nabz_sums_all)
+cat(" Max         = ",max_3_3,"\n")
+```
+Diese Statistik zeigt, dass man der Person mit den meisten gesehenen Filmen immer noch `r min_3_3` Filme empfeheln könnte. Der Median liegt bei `r q_3_3[2]` was bedeutet, dass die Hälfte der Personen 64 oder weniger Filme gesehen haben. Die Person mit den wenigsten gesehenen Filmen hat lediglich 19 Filme gesehen. 
+
+
+```{r 3_3_1}
+boxplot(bin_rating_matrix_nabz_sums_all)
+```
+
+Der Boxplot zeigt nochmals, dass die hälfte der Personen zwischen 
+148 und 32 Filme gesehen hat. 
+
+
+# 4. Top-N Empfehlungen
+
+### 4.1.Matrix für Bewertung aller Filme durch element-weise Multiplikation der 
+Matrix der Cosinus-Ähnlichkeiten von Nutzern und Filmen und “Negativabzug” der 
+User-Items Matrix erzeugen.
+```{r a4_1}
+cos_mol_nabz  <-  cos_2_1 * as.matrix(bin_rating_matrix_nabz)
+cos_mol_pos   <-  cos_2_1 * as.matrix(bin_rating_matrix_pos)
+#cos_mol_pos für spätere Analyse der Empfehlungen
+```
+Diese Matrizen zeigen uns die Vorhergesagte Bewertung für die Filme die noch 
+nicht geschaut worden sind. Filme die die jeweilige Person bereits gesehen hat, 
+wurden mit einer `0` codiert. Auf diese Matrix basiert die Auswahl der 
+Empfehlungen. 
+
+
+### 4.2.Dimension der Matrix für die Bewertung aller Filme prüfen.
+```{r a4_2}
+dim(cos_mol_nabz)
+```
+Die Dimension zeigt wieder, dass man für alle `r dim(cos_mol_nabz)[1]` Personen, 
+`r dim(cos_mol_nabz)[2]` Filme hat. 
+
+
+### 4.3.Top-20 Listen pro Nutzer extrahieren.
+```{r a4_3}
+topn <- 20
+len <- dim(cos_mol_nabz)[1]
+
+get_topn_recos <- function (m,u,n=topn){
+  return(names(head(sort(m[u,],decreasing = TRUE),n)))
+}
+
+analyse_topn_recos <- function (m,n=topn,len=943){
+  df <- data.frame(matrix(nrow = topn,ncol = len))
+  for (user in 1:len){
+    df[,user] <- get_topn_recos(m,user,n)
+    }
+  return (df)
+}
+top20_all <- analyse_topn_recos(cos_mol_nabz)
+```
+In der vorherigen Matrix haben wir alle Bewertungen für alle Filme evaluiert. Um
+die besten Filme für jede Person herauszufinden, müssen wir die Bewertungen von 
+jeder einzelenen Person der Grösse nach ordnen. 
+
+```{r a4_3_1}
+top20_all[1]
+```
+In dieser Tabelle sehen wir nun, dass z.B. der Person 1 entsprechende Filme 
+empfohlen worden sind. 
+
+
+### 4.4.Länge der Top-20 Listen pro Nutzer prüfen.
+```{r a4_4}
+summary(sapply(top20_all, n_distinct))
+sum(is.na(top20_all)) #How many NA's are they?
+apply(is.na(top20_all),1, which) #Reveal position of  NA's
+top20_all$X685
+```
+Wenn wir die Länge der unterschiedlichen Empfehlungen pro User mit `sapply` 
+ansehen, ist zu beachten, dass es mindestens ein User gibt, der in allen 
+Vorhersagen nur NA's hat. Weiter können wir mit `sum` spezifizieren, dass es 
+lediglich 20 NA's in der ganzen Tabelle hat. Mit `which` konnten wir nun 
+herausfinden, dass der User `r apply(is.na(top20_all),1, which)[1]` statt 
+Empfehlungen nur `NA`'s hat. In diesem Recommender bedeutet das, dass der User 
+`r apply(is.na(top20_all),1, which)[1]` alle Filme bereits bewertet hat und wir 
+ihm somit keine anderen empfehlen können.
+
+
+### 4.5. Verteilung der minimalen Ähnlichkeit für Top-N Listen für N = 10, 20, 50 und 100 für alle Nutzer visuell vergleichen.
+```{r a4_5}
+topnlist <- c(10,20,50,100)
+
+get_topn_recos_values <- function (m,u,n=top.n){
+  return(head(sort(m[,u],decreasing = TRUE),n))
+}
+
+analyse_topn_recos_values <- function (m,n=top.n,len=943){
+  df <- data.frame(matrix(nrow = top.n,ncol = len))
+  for (user in 1:len){
+    df[,user] <- get_topn_recos_values(m,user,n)
+    }
+  return (df)
+}
+
+for (i in 1:length(topnlist)){
+  top.n <- topnlist[i]
+  
+  topN_all_values <- analyse_topn_recos_values(cos_mol_nabz)
+  top_n_df <- stack(as.data.frame(topN_all_values))
+  min_val <- as.numeric(tail(topN_all_values, 1))
+  
+  top_n_vis <- ggplot()+
+    aes(min_val)+
+    stat_bin(breaks=seq(0,1,0.02), fill="#69b3a8", color="#e9ecef", alpha=0.9)+
+    labs(x = "Minimale Ähnlichkeit", 
+         y = "Anzahl Filme", 
+         title = paste("Minimale Similarity für Top-",top.n, "Empfehlungen"))
+  
+  print(top_n_vis)
+}
+```
+
+In diesen 4 Grafiken kann man sehr schön sehen, dass die minimale Ähnlichkeit
+mit steigendem Top-N Kriterium abnimmt. Das ist logisch, da die Empfehlungen mit
+steigender Top-N Zahl abnimmt. 
+
+
+### 4.6.Top-20 Empfehlungen für Nutzer “5”, “25”, “50” und “150” visuell evaluieren.
+```{r a4_6, include=FALSE}
+#function return number of genres in determined movies
+genre_profile <- function (top20,filmgenres = movies){
+  top20 <- as.data.frame(top20) %>% rename(title = top20)
+  g_top20 <- semi_join(movies, top20, "title" = as.character(top20))
+  genre_profile <- lapply(g_top20[4:22], sum)
+  return (genre_profile)
+}
+
+#combines seen and predicted movies/genres into one df and plots each into
+#geom_point.
+top_n_eval <- function(user_recom, user, t=20){
+  seen_vs_pred <- data.frame(
+    genres=names(user_recom), 
+    seen=as.numeric(user_recom[1,]),
+    pred=as.numeric(user_recom[2,]) 
+    )
+
+  ggplot(seen_vs_pred) +
+    geom_segment( aes(x=genres, xend=genres, y=seen, yend=pred), color="grey") +
+    geom_point( aes(x=genres, y=seen), color=rgb(0.2,0.7,0.1,0.8), size=3 ) +
+    geom_point( aes(x=genres, y=pred), color=rgb(0.7,0.2,0.1,0.8), size=3 ) +
+    coord_flip()+
+    theme(
+      legend.position = "none",
+      panel.border = element_blank()
+      ) +
+    labs( x= "",
+          y = "Anzahl Genres", 
+          title =paste("Anzahl Genres in den Top-", t, "Empfehlungen\nfür den 
+                                                  User #", user), 
+          subtitle = "Rot = Gesehen / Grün = Empfohlen ")
+}
+
+vorhersage_vs_gesehen <- function(matrix, user, top=20){
+  matrix <- rbind(rep(top,5) , rep(0,5) , matrix)
+
+  colors_border=c( rgb(0.2,0.5,0.5,0.7), rgb(0.8,0.2,0.5,0.7) , 
+                   rgb(0.7,0.5,0.1,0.7) , rgb(0.6,0.2,0.1,0.7))
+  colors_in=c( rgb(0.2,0.5,0.5,0.2), rgb(0.8,0.2,0.5,0.2) , 
+               rgb(0.7,0.5,0.1,0.2) , rgb(0.6,0.2,0.1,0.2) )
+
+#Spiderplot  
+  radarchart( matrix  , axistype=1 ,
+      pcol=colors_border , pfcol=colors_in , plwd=2 , plty=1,
+      cglcol="grey", cglty=1, axislabcol="grey", caxislabels=seq(0,top,5), 
+    cglwd=0.8, title = paste("Vorhegesagte vs gesehen Genres für User #", user),
+      vlcex=0.8 
+      )
+  legend(x=1.3, y=1, legend = c("Vorhersage", "Gesehen"), bty = "n", pch=20, 
+         col=colors_border , text.col = "black",
+         cex=1.2, pt.cex=3)
+}
+#Cleveland plot
+#combines functions to shorten the demand for future users and Top-N requests
+prediction <- function(user, top=20, plot="cleveland"){ #top-20 as default
+  pr <- get_topn_recos(cos_mol_nabz, user, top) #top-N recomendet movies
+  sn <- get_topn_recos(cos_mol_pos, user, top) #top-N seen movies
+  
+  gp_pr <- genre_profile(pr) #genre profile recomendet movies
+  gp_sn <- genre_profile(sn) #genre profile seen movies
+  
+  pr_sn <- bind_rows(gp_pr, gp_sn) #recommendet and seen movies
+  rownames(pr_sn) <- c("Vorhersage", "Gesehen")
+  
+  if (plot == "cleveland"){
+    top_n_eval(pr_sn, user, top) #pcleveland plot predicted vs seen movies
+  } else if(plot == "spider"){
+    vorhersage_vs_gesehen(pr_sn, user, top = top)
+  }
+   
+}
+```
+
+```{r a4_6 u5}
+prediction(5)
+prediction(5, plot = "spider")
+ggplotly(prediction(5))
+```
+
+Wir haben die Funktionen so combiniert, dass man zwischen einem Spiderplot und 
+einem Clevelandplot auswählen kann. Am Clevelandplot sieht man besser die 
+Differenzen wenn die Punkte auseinander liegen. Beim Spiderplot kann man mit den 
+Überschneidungen besser sehen wie accurat die Vorhersage gemacht wurde. 
+Der einfachhalber zeigen wir für die anderen Personen die Qulaität der 
+Empfehlungen anhand des Clevelandplot. Wenn man den Clevelandplot mit ggplotly 
+plotted kann man sogar die genaue Anzahl der Genres erfahren wenn man mit der
+Maus drüber geht. 
+Für die Person 5 sehen wir nun z.B. dass der Recommender richtig gesehen hat, 
+dass die Person gerne Comedy schaut und ihr entsprechen auch am meisten Comedy 
+empfohlen. Es fällt auf, dass wenn diese Person ein Genre weniger als 2 mal 
+gesehen hat, es ihm eher nicht mehr empfohlen wird. Es ist aber interesant zu 
+sehen, dass der Recommender weniger Sci-Fi empfohlen hat. 
+
+```{r a4_6_2}
+prediction(25)
+prediction(50)
+prediction(150)
+```
+
+Bei den restlichen 3 Perosnen haben wir ein ähnliches Szenario. Es ist jedoch 
+schön zu sehen, dass wir mit der Perosn 50 einen Romatiker haben. 
+
+
+### 4.7.Für Nutzer “133” und “555” Profil mit Top-N Empfehlungen für 
+N = 20, 30, 40, 50 analysieren, visualisieren und diskutieren.
+```{r a4_7_1}
+prediction(133, 20)
+prediction(133, 30)
+prediction(133, 40)
+prediction(133, 50)
+```
+
+Die Person 133 hat einen interesanten recommender. Es werden Ihr nur Drama und 
+Comedy empfohlen. Das ist soweit verwunderlich, da sie Action und Thriller fast 
+gleich oft gesehen hat wie Comedy, diese ihr aber nicht mehr empfohlen werden.
+Das kann vielleicht wegen den Filmprofile sein. Wir visualisieren hier die 
+einzelnen Genres, haben aber gesehen, dass bei vielen Filmen 2 oder mehr Genres 
+vorhanden sind. Dies könnte ein Grund für diese Erscheinung sein. 
+
+
+```{r a4_7_2}
+prediction(555, 20)
+prediction(555, 30)
+prediction(555, 40)
+prediction(555, 50)
+```
+
+Die Person 555 hat ein sehr breites Profil.Hervorzuheben ist, dass mit 
+steigenden Top-N weniger Thriller und mehr Comedy empfohlen werden.
+Ausserdem schaut diese Person oder dieses Profil sehr viele unterschiedliche 
+Genres. Das könnte damit zusammenhängen, dass es ein geteilter Account ist. 

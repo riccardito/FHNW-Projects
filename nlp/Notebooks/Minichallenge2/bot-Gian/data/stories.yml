@@ -1,0 +1,24 @@
+version: "3.1"
+
+stories:
+
+- story: say hello
+  steps:
+  - intent: greet
+  - action: utter_greet
+
+- story: Get ticket seller locations
+  steps:
+  - intent: greet
+  - action: utter_greet
+  - intent: get_places_to_by_ticket
+  - action: utter_get_places_to_by_ticket
+  - intent: get_mountain_railways
+  - action: utter_get_mountain_railways
+  - intent: thank_you
+  - action: utter_thank_you
+
+- story: thank bot
+  steps:
+  - intent: thank_you
+  - action: utter_thank_you

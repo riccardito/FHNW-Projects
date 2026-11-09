@@ -1,0 +1,26 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+build/
+dist/
+.venv/
+venv/
+.env
+
+# Jupyter -- outputs are stripped by the nbstripout filter (.gitattributes)
+.ipynb_checkpoints/
+
+# Secrets (the IoT microcontroller reads secrets.py; it is never committed)
+secrets.py
+
+# R
+.Rhistory
+.RData
+.Rproj.user/
+
+# Editors and OS
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
